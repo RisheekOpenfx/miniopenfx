@@ -8,7 +8,7 @@ Add filters for History
 need to assert the currencies and responses of the api in prices.ts
 Biome linter
 prettier
-
+have an error handling middleware
 
 
 

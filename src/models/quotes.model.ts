@@ -1,28 +1,22 @@
-import {
-  pgTable,
-  uuid,
-  text,
-  timestamp,
-  decimal
-} from "drizzle-orm/pg-core"
-import { eq } from "drizzle-orm"
-import { db } from "../database/client.js"
+import { pgTable, uuid, text, timestamp, decimal } from "drizzle-orm/pg-core";
+import { eq } from "drizzle-orm";
+import { db } from "../database/client.js";
 
 export const quotes = pgTable("quotes", {
   id: uuid("id").defaultRandom().primaryKey(),
   user_id: uuid("user_id").notNull(),
   pair: text("pair").notNull(),
   side: text("side").notNull(),
-  rate: decimal("rate", { precision: 18, scale: 8, mode:"number" }).notNull(),
+  rate: decimal("rate", { precision: 18, scale: 8, mode: "number" }).notNull(),
   status: text("status").notNull(),
-  expires_at: timestamp("expires_at").notNull()
-})
+  expires_at: timestamp("expires_at").notNull(),
+});
 
 export async function createQuote(data: {
-  userId: string
-  pair: string
-  side: "BUY" | "SELL"
-  rate: number
+  userId: string;
+  pair: string;
+  side: "BUY" | "SELL";
+  rate: number;
 }) {
   const [quote] = await db
     .insert(quotes)
@@ -32,15 +26,15 @@ export async function createQuote(data: {
       side: data.side,
       rate: data.rate,
       status: "ACTIVE",
-      expires_at: new Date(Date.now() + 50_000)
+      expires_at: new Date(Date.now() + 50_000),
     })
     .returning({
       id: quotes.id,
       rate: quotes.rate,
-      expires_at: quotes.expires_at
-    })
+      expires_at: quotes.expires_at,
+    });
 
-  return quote
+  return quote;
 }
 
 export async function getQuoteById(quoteId: string) {
@@ -49,9 +43,9 @@ export async function getQuoteById(quoteId: string) {
     .from(quotes)
     .where(eq(quotes.id, quoteId))
     .limit(1)
-    .execute()
+    .execute();
 
-  return quote[0]
+  return quote[0];
 }
 
 export async function expireQuote(quoteId: string) {
@@ -59,5 +53,5 @@ export async function expireQuote(quoteId: string) {
     .update(quotes)
     .set({ status: "USED" })
     .where(eq(quotes.id, quoteId))
-    .execute()
+    .execute();
 }

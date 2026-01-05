@@ -1,5 +1,5 @@
 export enum TradeResult {
   DUPLICATED = "DUPLICATED",
   REJECTED = "REJECTED",
-  EXECUTED = "EXECUTED"
+  EXECUTED = "EXECUTED",
 }

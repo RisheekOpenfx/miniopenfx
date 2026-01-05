@@ -1,16 +1,16 @@
 {
   "compilerOptions": {
-    "target": "es2020",            // Specify ECMAScript target version
-    "module": "es2020",            // Specify module code generation
-    "strict": true,                // Enable all strict type-checking options
-    "esModuleInterop": true,       // Enable interoperability between CommonJS and ES Modules
-    "skipLibCheck": true,          // Skip type checking of declaration files
-    "forceConsistentCasingInFileNames": true,  // Ensure consistent casing in file names
-    "moduleResolution": "node",    // Specify module resolution strategy
-    "jsx": "react-jsx",           // Support JSX in .tsx files
-    "allowJs": true,              // Allow JavaScript files to be compiled
-    "outDir": "./dist"            // Redirect output structure to this directory
+    "target": "es2020", // Specify ECMAScript target version
+    "module": "es2020", // Specify module code generation
+    "strict": true, // Enable all strict type-checking options
+    "esModuleInterop": true, // Enable interoperability between CommonJS and ES Modules
+    "skipLibCheck": true, // Skip type checking of declaration files
+    "forceConsistentCasingInFileNames": true, // Ensure consistent casing in file names
+    "moduleResolution": "node", // Specify module resolution strategy
+    "jsx": "react-jsx", // Support JSX in .tsx files
+    "allowJs": true, // Allow JavaScript files to be compiled
+    "outDir": "./dist" // Redirect output structure to this directory
   },
-  "include": ["src/**/*"],        // Specify files to include in compilation
-  "exclude": ["node_modules"]      // Specify files to exclude from compilation
+  "include": ["src/**/*"], // Specify files to include in compilation
+  "exclude": ["node_modules"] // Specify files to exclude from compilation
 }

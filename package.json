@@ -33,6 +33,7 @@
     "eslint": "^9.39.2",
     "eslint-config-strongloop": "^2.1.0",
     "globals": "^17.0.0",
+    "jiti": "^2.6.1",
     "prettier": "^3.7.4",
     "supertest": "^7.1.4",
     "tsx": "^4.21.0",

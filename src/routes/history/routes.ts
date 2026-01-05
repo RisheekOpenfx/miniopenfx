@@ -3,10 +3,10 @@ import { authMiddleware } from "../../middleware/auth.js";
 import type { Variables } from "../../types/types.js";
 import { historyController } from "../../controllers/history.controller.js";
 
-const app = new Hono<{ Variables: Variables }>()
+const app = new Hono<{ Variables: Variables }>();
 
-app.use('*', authMiddleware)
+app.use("*", authMiddleware);
 
-app.get('/', historyController)
+app.get("/", historyController);
 
-export default app
+export default app;
