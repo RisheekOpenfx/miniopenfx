@@ -6,6 +6,10 @@ Look into hosting it on a linux server
 Add filters for History
 need to assert the currencies and responses of the api in prices.ts
 
+move to actual session token instead of JWT
+use emails to send the money not user_id
+handle null returns from the database model
+create a good idempotency key
 
 
 
