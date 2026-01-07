@@ -10,5 +10,5 @@ export async function devAddMoneyController(c: Context) {
 
   const { currency, amount, reciverId } = await c.req.json();
   await devAddMoneyService(db, reciverId, currency, amount, userId);
-  return success(c, "Credited!" , 201);
+  return success(c, "Credited!", 201);
 }

@@ -1,6 +1,6 @@
 import { pgTable, numeric, text, uuid, primaryKey } from "drizzle-orm/pg-core";
 import { eq, sql } from "drizzle-orm";
-import type { NeonHttpDatabase } from "drizzle-orm/neon-http";
+import type { DbLike } from "../types/types.js";
 import type { userBalanceType } from "../types/types.js";
 
 export const balances = pgTable(
@@ -15,13 +15,13 @@ export const balances = pgTable(
   }),
 );
 
-
-type DbLike = NeonHttpDatabase<any>;
-
 function mapBalance(row: typeof balances.$inferSelect): userBalanceType {
   return {
     ...row,
-    amount: typeof row.amount === "string" ? Number(row.amount) : (row.amount as any),
+    amount:
+      typeof row.amount === "string"
+        ? Number(row.amount)
+        : (row.amount as number),
   } as userBalanceType;
 }
 

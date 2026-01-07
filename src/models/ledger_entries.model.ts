@@ -1,9 +1,7 @@
 import { pgTable, numeric, uuid, text, timestamp } from "drizzle-orm/pg-core";
-import type { NeonHttpDatabase } from "drizzle-orm/neon-http";
+import type { DbLike } from "../types/types";
 import { eq } from "drizzle-orm";
 import type { LedgerEntryType } from "../types/types";
-
-type DbLike = NeonHttpDatabase<any>;
 
 export const ledger_entries = pgTable("ledger_entries", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -24,7 +22,8 @@ function mapEntry(row: LedgerRow): LedgerEntryType {
     id: row.id,
     user_id: row.user_id,
     currency: row.currency,
-    delta: typeof row.delta === "string" ? Number(row.delta) : (row.delta as any),
+    delta:
+      typeof row.delta === "string" ? Number(row.delta) : (row.delta as number),
     reason: row.reason,
     created_at: row.created_at,
     receiver_id: row.receiver_id,

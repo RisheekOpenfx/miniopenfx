@@ -16,17 +16,18 @@ export async function createQuoteService(
     await refreshPrice(pair);
   }
 
-  const market: number|null = getPrice(pair);
+  const market: number | null = getPrice(pair);
   if (market === null) {
     throw new Error(ErrorCode.MARKET_PRICE_UNAVAILABLE);
   }
 
-  const rate:number = side === "BUY" ? market * (1 + BUY_SPREAD) : market * (1 - SELL_SPREAD);
+  const rate: number =
+    side === "BUY" ? market * (1 + BUY_SPREAD) : market * (1 - SELL_SPREAD);
 
   return await createQuote(db, {
     userId,
     pair,
     side,
-    rate
+    rate,
   });
 }

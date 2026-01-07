@@ -9,5 +9,5 @@ export async function historyController(c: Context) {
   const db: DbLike = createDb(c.env.DATABASE_URL);
   const userId: UUID = c.get("userId");
   const result = await getLedgerEntriesByUserId(db, userId);
-  return success(c,  result, 200);
+  return success(c, result, 200);
 }

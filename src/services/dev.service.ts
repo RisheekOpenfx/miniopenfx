@@ -5,15 +5,15 @@ import { ErrorCode } from "../errors/error_codes";
 import { DbLike } from "../types/types";
 
 export async function devAddMoneyService(
-  db:DbLike,
+  db: DbLike,
   reciverId: string,
   currency: string,
   amount: number,
-  userId: string
+  userId: string,
 ): Promise<string> {
   const user = await getUserById(db, userId);
-  if (user === null){
-    throw new Error(ErrorCode.UNAUTHORIZED)
+  if (user === null) {
+    throw new Error(ErrorCode.UNAUTHORIZED);
   }
   if (user.role != "admin") {
     throw new Error(ErrorCode.NO_PERMISSION);

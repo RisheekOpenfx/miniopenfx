@@ -1,9 +1,7 @@
 import { pgTable, uuid, text, timestamp, numeric } from "drizzle-orm/pg-core";
 import { eq } from "drizzle-orm";
-import type { NeonHttpDatabase } from "drizzle-orm/neon-http";
+import type { DbLike } from "../types/types.js";
 import type { quoteType } from "../types/types.js";
-
-type DbLike = NeonHttpDatabase<any>;
 
 export const quotes = pgTable("quotes", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -26,7 +24,8 @@ function mapQuote(row: QuoteRow): quoteType {
     user_id: row.user_id,
     pair: row.pair,
     side: row.side as "BUY" | "SELL",
-    rate: typeof row.rate === "string" ? Number(row.rate) : (row.rate as any),
+    rate:
+      typeof row.rate === "string" ? Number(row.rate) : (row.rate as number),
     status: row.status,
     expires_at: row.expires_at,
   };
@@ -73,12 +72,6 @@ export async function getQuoteById(
   return row ? mapQuote(row) : null;
 }
 
-export async function expireQuote(
-  db: DbLike,
-  quoteId: string,
-): Promise<void> {
-  await db
-    .update(quotes)
-    .set({ status: "USED" })
-    .where(eq(quotes.id, quoteId));
+export async function expireQuote(db: DbLike, quoteId: string): Promise<void> {
+  await db.update(quotes).set({ status: "USED" }).where(eq(quotes.id, quoteId));
 }

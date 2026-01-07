@@ -6,5 +6,5 @@ export function success(
   data: unknown,
   status: HttpStatus = HttpStatus.OK,
 ) {
-  return c.json({success: true, data:data},status);
+  return c.json({ success: true, data: data }, status);
 }

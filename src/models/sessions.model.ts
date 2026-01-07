@@ -1,9 +1,7 @@
 import { pgTable, uuid, timestamp } from "drizzle-orm/pg-core";
 import { eq } from "drizzle-orm";
-import type { NeonHttpDatabase } from "drizzle-orm/neon-http";
+import type { DbLike } from "../types/types";
 import type { sessionType } from "../types/types";
-
-type DbLike = NeonHttpDatabase<any>;
 
 export const sessions = pgTable("sessions", {
   id: uuid("id").notNull().defaultRandom().primaryKey(),

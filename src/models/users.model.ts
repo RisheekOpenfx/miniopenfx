@@ -1,9 +1,7 @@
 import { pgTable, uuid, text, timestamp } from "drizzle-orm/pg-core";
 import { eq } from "drizzle-orm";
-import type { NeonHttpDatabase } from "drizzle-orm/neon-http";
 import type { userType } from "../types/types";
-
-type DbLike = NeonHttpDatabase<any>;
+import type { DbLike } from "../types/types";
 
 export const users = pgTable("users", {
   id: uuid("id").notNull().defaultRandom().primaryKey(),
