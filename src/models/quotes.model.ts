@@ -26,7 +26,6 @@ function mapQuote(row: QuoteRow): quoteType {
     user_id: row.user_id,
     pair: row.pair,
     side: row.side as "BUY" | "SELL",
-    // If quoteType.rate is string, remove Number(...)
     rate: typeof row.rate === "string" ? Number(row.rate) : (row.rate as any),
     status: row.status,
     expires_at: row.expires_at,
@@ -48,7 +47,6 @@ export async function createQuote(
       user_id: data.userId,
       pair: data.pair,
       side: data.side,
-      // numeric column → safest as string
       rate: String(data.rate),
       status: "ACTIVE",
       expires_at: new Date(Date.now() + 50_000),

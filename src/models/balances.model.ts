@@ -3,14 +3,11 @@ import { eq, sql } from "drizzle-orm";
 import type { NeonHttpDatabase } from "drizzle-orm/neon-http";
 import type { userBalanceType } from "../types/types.js";
 
-// ---- Table ----
-// balances should be uniquely identified by (user_id, currency)
 export const balances = pgTable(
   "balances",
   {
     user_id: uuid("user_id").notNull(),
     currency: text("currency").notNull(),
-    // Use numeric/decimal as string to avoid precision loss
     amount: numeric("amount", { precision: 18, scale: 8 }).notNull(),
   },
   (t) => ({
@@ -28,7 +25,6 @@ function mapBalance(row: typeof balances.$inferSelect): userBalanceType {
   } as userBalanceType;
 }
 
-// ---- Queries ----
 export async function getUserBalances(
   db: DbLike,
   userId: string,
@@ -52,14 +48,11 @@ export async function upsertBalance(
     .values({
       user_id,
       currency,
-      // numeric column expects string-ish; passing number often works,
-      // but string is safer and consistent
       amount: String(delta),
     })
     .onConflictDoUpdate({
       target: [balances.user_id, balances.currency],
       set: {
-        // add delta to existing amount
         amount: sql`${balances.amount} + ${delta}`,
       },
     });

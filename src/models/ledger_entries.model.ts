@@ -3,16 +3,13 @@ import type { NeonHttpDatabase } from "drizzle-orm/neon-http";
 import { eq } from "drizzle-orm";
 import type { LedgerEntryType } from "../types/types";
 
-// Prefer a properly typed DB/tx param
 type DbLike = NeonHttpDatabase<any>;
 
-// ✅ Fix spelling: ledger_entries (recommended)
 export const ledger_entries = pgTable("ledger_entries", {
   id: uuid("id").defaultRandom().primaryKey(),
   user_id: uuid("user_id").notNull(),
   currency: text("currency").notNull(),
 
-  // Use numeric for money-like values; keep as string in DB layer
   delta: numeric("delta", { precision: 18, scale: 8 }).notNull(),
 
   reason: text("reason").notNull(),
@@ -20,7 +17,6 @@ export const ledger_entries = pgTable("ledger_entries", {
   receiver_id: uuid("receiver_id").notNull(),
 });
 
-// Drizzle row type
 type LedgerRow = typeof ledger_entries.$inferSelect;
 
 function mapEntry(row: LedgerRow): LedgerEntryType {
@@ -28,7 +24,6 @@ function mapEntry(row: LedgerRow): LedgerEntryType {
     id: row.id,
     user_id: row.user_id,
     currency: row.currency,
-    // If LedgerEntryType expects string, remove Number(...)
     delta: typeof row.delta === "string" ? Number(row.delta) : (row.delta as any),
     reason: row.reason,
     created_at: row.created_at,
@@ -51,14 +46,12 @@ export async function createLedgerEntry(
     .values({
       user_id: data.userId,
       currency: data.currency,
-      // numeric column -> safest as string
       delta: String(data.delta),
       reason: data.reason,
       receiver_id: data.receiverId,
     })
     .returning();
 
-  // returning() should always return one row for insert; but guard anyway
   if (!row) {
     throw new Error("Failed to create ledger entry");
   }
