@@ -101,4 +101,12 @@ export const ERROR_RESPONSE_MAP: Record<
         message: "Isufficient Balance please topup"
     }
   },
+
+  [ErrorCode.USER_DOESNT_EXIST]: {
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    body: {
+        success: false,
+        message: "User youre trying to send doenst exist, check the email id."
+    }
+  },
 };

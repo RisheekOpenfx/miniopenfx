@@ -11,6 +11,7 @@ export const ErrorCode = {
   QUOTE_EXPIRED:"QUOTE_EXPIRED",
   DUPLICATE_TRADE: "DUPLICATE_TRADE",
   INSUFFICIENT_BALANCE: "INSUFFICIENT_BALANCE",
+  USER_DOESNT_EXIST: "USER_DOESNT_EXIST"
 } as const;
 
 export type ErrorCode = typeof ErrorCode[keyof typeof ErrorCode];
