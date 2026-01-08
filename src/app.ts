@@ -12,6 +12,7 @@ export function createApp(){
     app.use("*", authMiddleware);
     app.use("*", loggerMiddleware);
     app.onError((err, c: Context<{Variables: Variables, Bindings: EnvBindings}>) => {
+      console.log(err)
 if (err instanceof Error && err.message in ERROR_RESPONSE_MAP) {
   const errorCode = err.message as ErrorCode;
   const { status, body } = ERROR_RESPONSE_MAP[errorCode];

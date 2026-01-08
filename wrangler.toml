@@ -9,3 +9,18 @@ bindings = [{ name = "FX_DO", class_name = "FxPricesDO" }]
 [[migrations]]
 tag = "v1"
 new_sqlite_classes = ["FxPricesDO"]
+
+[observability]
+enabled = false
+head_sampling_rate = 1
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+persist = true
+invocation_logs = true
+
+[observability.traces]
+enabled = false
+persist = true
+head_sampling_rate = 1
