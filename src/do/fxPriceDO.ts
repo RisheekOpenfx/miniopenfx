@@ -100,7 +100,7 @@ export class FxPricesDO {
     }
   }
 
-  async fetch(req: Request): Promise<Record<string, Quote | null>>{
+  async fetch(req: Request) {
     const url = new URL(req.url);
 
     const symbols = (url.searchParams.get("symbols") ?? "EURUSDT")
@@ -115,7 +115,12 @@ export class FxPricesDO {
         if(this.prices[s]){
             out[s] = this.prices[s];
         }
+        else{
+            return this.fetch(req);
+        }
     }
-    return out;
-}
+    return new Response(JSON.stringify(out), {
+      headers: { "content-type": "application/json" },
+    });
+  }
 }
