@@ -1,6 +1,6 @@
 import type { PriceEntry } from "../types/types.js";
 
-const CACHE_TTL_MS: number = 3000;
+const CACHE_TTL_MS: number = 30000;
 
 const priceCache: Record<string, PriceEntry> = {};
 
@@ -37,29 +37,31 @@ export async function isFresh(pair: string, pricecache:KVNamespace): Promise<boo
   return Date.now() - entry.ts < CACHE_TTL_MS;
 }
 
-export async function getPrice(pair: string, pricecache:KVNamespace): Promise<PriceEntry | null> {
-    const raw = await pricecache.get(pair);
-  console.log("getPrice", raw)
+export async function getPrice(pair: string, pricecache: KVNamespace): Promise<PriceEntry | null> {
+  const raw = await pricecache.get(pair);
   if (!raw) return null;
 
-  const retValue = JSON.parse(raw) as {
-    rate: number;
-    ts: number;
-  };
-  return retValue;
+  const parsed = JSON.parse(raw) as unknown;
 
+  if (
+    typeof parsed !== "object" || parsed === null ||
+    typeof (parsed as any).rate !== "number" ||
+    typeof (parsed as any).ts !== "number"
+  ) {
+    return null; // corrupted cache
+  }
+
+  return parsed as PriceEntry;
 }
 
-export async function setPrice(pair: string, rate: number, pricecache:KVNamespace): Promise<void> {
-      const payload = {
-      rate,
-      ts: Date.now(),
-    };
-    console.log("setprice", payload);
+export async function setPrice(pair: string, rate: number, pricecache: KVNamespace): Promise<void> {
+  const payload: PriceEntry = { rate, ts: Date.now() };
 
-    await pricecache.put(pair, JSON.stringify(payload));
-
+  await pricecache.put(pair, JSON.stringify(payload), {
+    expirationTtl: Math.ceil(CACHE_TTL_MS / 1000),
+  });
 }
+
 
 function parsePair(pair: string): { base: string; quote: string } {
   const symbol: string = pair.replace("/", "");
