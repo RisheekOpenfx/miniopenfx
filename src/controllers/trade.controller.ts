@@ -11,6 +11,7 @@ export async function selfTradeController(c: Context) {
   const userId = c.get("userId");
   const idempotencyKey = c.req.header("Idempotency-Key");
   const { quoteId, amount } = await c.req.json();
+  console.log(quoteId, amount)
 
   await trade(db, userId, userId, idempotencyKey, quoteId, amount);
 
