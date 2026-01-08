@@ -15,7 +15,9 @@ export async function createQuoteService(
   priceCache: KVNamespace
 ): Promise<quoteType> {
   if (!isFresh(pair, priceCache)) {
+    console.log("true")
     await refreshPrice(pair, priceCache);
+    console.log("true2")
   }
   const price: PriceEntry | null = await getPrice(pair, priceCache);
   if (price === null) {
