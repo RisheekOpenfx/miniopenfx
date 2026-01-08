@@ -10,6 +10,8 @@ move to actual session token instead of JWT
 use emails to send the money not user_id
 handle null returns from the database model
 create a good idempotency key
+use multiple source to fetch market price
+detect all the possible breaks
 
 
 
