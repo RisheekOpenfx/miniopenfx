@@ -14,7 +14,7 @@ import priceRoutes from "./routes/price/routes.js"
 
 const app = createApp();
 
-app.get("/v1/health", (c) => c.json({ ok: true }));
+app.get("/health", (c) => c.json({ ok: true }));
 
 app.route("/auth", authRoutes);
 app.route("/quotes", quoteRoutes);

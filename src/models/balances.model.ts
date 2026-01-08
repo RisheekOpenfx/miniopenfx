@@ -2,6 +2,8 @@ import { pgTable, numeric, text, uuid, primaryKey } from "drizzle-orm/pg-core";
 import { eq, sql } from "drizzle-orm";
 import type { DbLike } from "../types/types.js";
 import type { userBalanceType } from "../types/types.js";
+import { error } from "console";
+import { ErrorCode } from "../errors/error_codes.js";
 
 export const balances = pgTable(
   "balances",

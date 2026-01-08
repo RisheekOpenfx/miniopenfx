@@ -52,9 +52,7 @@ export async function createQuote(
     })
     .returning();
 
-  if (!row) {
-    throw new Error("Failed to create quote");
-  }
+
 
   return mapQuote(row);
 }

@@ -1,17 +1,18 @@
 TODO:
 
-Write test cases for all apis
-Look into Unit testing
+
+
 Look into hosting it on a linux server
-Add filters for History
 need to assert the currencies and responses of the api in prices.ts
 
-move to actual session token instead of JWT
-use emails to send the money not user_id
+Add filters for History
+Look into Unit testing
+Write test cases for all apis
+move to actual session token instead of JWT ???
 handle null returns from the database model
 create a good idempotency key
-use multiple source to fetch market price
 detect all the possible breaks
+add readme
 
 
 
@@ -35,6 +36,8 @@ api to get History
 Implement account/wallet id instead of using userid for transfer
 Drizzle-orm for DB
 add automated balance calculator
+use multiple source to fetch market price
+use emails to send the money not user_id
 
 tedious jobs:
 
