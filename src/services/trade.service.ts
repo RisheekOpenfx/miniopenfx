@@ -60,7 +60,7 @@ export async function trade(
     console.log(e, "DB Error while getUserBalances");
     throw new Error(ErrorCode.DB_ERROR);
   }
-  if (res === undefined) {
+  if (res[0] === undefined) {
     throw new Error(ErrorCode.INSUFFICIENT_BALANCE);
   }
 
