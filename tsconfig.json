@@ -9,7 +9,8 @@
     "moduleResolution": "node", // Specify module resolution strategy
     "jsx": "react-jsx", // Support JSX in .tsx files
     "allowJs": true, // Allow JavaScript files to be compiled
-    "outDir": "./dist" // Redirect output structure to this directory
+    "outDir": "./dist", // Redirect output structure to this directory
+    "types": ["@cloudflare/workers-types"]
   },
   "include": ["src/**/*"], // Specify files to include in compilation
   "exclude": ["node_modules"] // Specify files to exclude from compilation

@@ -68,3 +68,10 @@ export type userType = {
   role: string;
   created_at: Date;
 };
+
+export type Env = {
+  FX_DO: DurableObjectNamespace;
+  COINGECKO_API_KEY?: string;
+};
+
+export type Quote = { bid: string; ask: string; mid: string; ts: number };

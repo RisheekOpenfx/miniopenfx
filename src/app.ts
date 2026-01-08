@@ -17,7 +17,7 @@ if (err instanceof Error && err.message in ERROR_RESPONSE_MAP) {
   return c.json(body, status);
 }
 
-return c.json({success:false, Message: err, Error: "Unseen Error"}, 500)
+return c.json({success:false, Message: err, Error: "Internal Server Error"}, 500)
     });
 
     app.notFound((c)=> c.json({success:false, "Message": "Route Not Found"}, 404),

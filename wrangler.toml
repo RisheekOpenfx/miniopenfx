@@ -2,3 +2,10 @@ name = "miniopenfx"
 main = "src/index.ts"
 compatibility_date = "2026-01-07"
 compatibility_flags = ["nodejs_compat"]
+
+[durable_objects]
+bindings = [{ name = "FX_DO", class_name = "FxPricesDO" }]
+
+[[migrations]]
+tag = "v1"
+new_classes = ["FxPricesDO"]
