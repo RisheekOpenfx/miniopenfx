@@ -2,7 +2,7 @@ import { createLedgerEntry } from "../models/ledger_entries.model";
 import { getUserById } from "../models/users.model";
 import { upsertBalance } from "../models/balances.model";
 import { ErrorCode } from "../errors/error_codes";
-import { DbLike } from "../types/types";
+import { DbLike, userType } from "../types/types";
 
 export async function devAddMoneyService(
   db: DbLike,
@@ -11,7 +11,13 @@ export async function devAddMoneyService(
   amount: number,
   userId: string,
 ): Promise<string> {
-  const user = await getUserById(db, userId);
+  let user: userType | null;
+  try {
+    user = await getUserById(db, userId);
+  } catch (e) {
+    console.log(e, "DB Error while getUserById");
+    throw new Error(ErrorCode.DB_ERROR);
+  }
   if (user === null) {
     throw new Error(ErrorCode.UNAUTHORIZED);
   }
@@ -19,13 +25,23 @@ export async function devAddMoneyService(
     throw new Error(ErrorCode.NO_PERMISSION);
   }
   const reason: string = "Credit";
-  await createLedgerEntry(db, {
-    userId: userId,
-    currency: currency,
-    delta: amount,
-    reason: reason,
-    receiverId: reciverId,
-  });
-  await upsertBalance(db, reciverId, currency, amount);
+  try {
+    await createLedgerEntry(db, {
+      userId: userId,
+      currency: currency,
+      delta: amount,
+      reason: reason,
+      receiverId: reciverId,
+    });
+  } catch (e) {
+    console.log(e, "DB Error while createLedgerEntry");
+    throw new Error(ErrorCode.DB_ERROR);
+  }
+  try {
+    await upsertBalance(db, reciverId, currency, amount);
+  } catch (e) {
+    console.log(e, "DB Error while upsertBalance");
+    throw new Error(ErrorCode.DB_ERROR);
+  }
   return "Credited!";
 }

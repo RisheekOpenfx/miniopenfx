@@ -13,6 +13,7 @@ export const ErrorCode = {
   INSUFFICIENT_BALANCE: "INSUFFICIENT_BALANCE",
   USER_DOESNT_EXIST: "USER_DOESNT_EXIST",
   JWT_RETURNED_STRING: "JWT_RETURNED_STRING",
+  DB_ERROR: "DB_ERROR",
 } as const;
 
 export type ErrorCode = (typeof ErrorCode)[keyof typeof ErrorCode];

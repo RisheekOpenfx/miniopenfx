@@ -1,12 +1,12 @@
 import type { PriceEntry } from "../types/types.js";
 
-const CACHE_TTL_MS = 3000;
+const CACHE_TTL_MS: number = 3000;
 
 const priceCache: Record<string, PriceEntry> = {};
 
 export async function refreshPrice(pair: string): Promise<number> {
   const { base, quote } = parsePair(pair);
-  const res: any = await fetch(
+  const res: Response = await fetch(
     `https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=${base},${quote}`,
   );
   const data: any = await res.json();
@@ -56,12 +56,15 @@ function parsePair(pair: string): { base: string; quote: string } {
   };
 }
 
-export async function getPriceMultiple(bookTicker:string|undefined, stub:any){
-  var symbols = bookTicker
-  var binance = {"binance":"None"};
-  if(symbols !== undefined){
+export async function getPriceMultiple(
+  bookTicker: string | undefined,
+  stub: any,
+) {
+  let symbols = bookTicker;
+  let binance = { binance: "None" };
+  if (symbols !== undefined) {
     symbols = symbols.toUpperCase();
-    
+
     const binanceRes = await stub.fetch(`https://do.local/?symbols=${symbols}`);
     binance = await binanceRes.json();
   }
@@ -74,7 +77,7 @@ export async function getPriceMultiple(bookTicker:string|undefined, stub:any){
   const headers: Record<string, string> = { accept: "application/json" };
 
   const cgRes = await fetch(cgUrl.toString(), { headers });
-  const coingecko = await cgRes.json(); 
+  const coingecko = await cgRes.json();
 
   return { symbols, binance, coingecko };
 }

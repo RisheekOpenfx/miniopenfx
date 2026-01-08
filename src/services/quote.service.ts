@@ -23,11 +23,12 @@ export async function createQuoteService(
 
   const rate: number =
     side === "BUY" ? market * (1 + BUY_SPREAD) : market * (1 - SELL_SPREAD);
-
-  return await createQuote(db, {
-    userId,
-    pair,
-    side,
-    rate,
-  });
+  let quote;
+  try {
+    quote = await createQuote(db, { userId, pair, side, rate });
+  } catch (e) {
+    console.log(e, "DB Error while CreateQuote");
+    throw new Error(ErrorCode.DB_ERROR);
+  }
+  return quote;
 }

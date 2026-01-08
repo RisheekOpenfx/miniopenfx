@@ -117,4 +117,12 @@ export const ERROR_RESPONSE_MAP: Record<
       message: "JWT Returned string",
     },
   },
+
+  [ErrorCode.DB_ERROR]: {
+    status: HttpStatus.DB_ERROR,
+    body: {
+      success: false,
+      message: "DB Error",
+    },
+  },
 };

@@ -1,3 +1,4 @@
+import { ErrorCode } from "../errors/error_codes";
 import { EnvBindings } from "../types/env";
 import type { Quote } from "../types/types";
 
@@ -17,23 +18,33 @@ export class FxPricesDO {
   }
 
   private buildUrl(symbols: string[]) {
-    const streams = symbols.map((s) => `${s.toLowerCase()}@bookTicker`).join("/");
+    const streams = symbols
+      .map((s) => `${s.toLowerCase()}@bookTicker`)
+      .join("/");
     return `wss://stream.binance.com:9443/stream?streams=${encodeURIComponent(streams)}`;
   }
 
   async ensureConnected(symbols: string[]) {
-    const key = symbols.map((s) => s.toUpperCase()).sort().join(",");
+    const key = symbols
+      .map((s) => s.toUpperCase())
+      .sort()
+      .join(",");
 
     if (
       this.ws &&
-      (this.ws.readyState === WebSocket.OPEN || this.ws.readyState === WebSocket.CONNECTING) &&
+      (this.ws.readyState === WebSocket.OPEN ||
+        this.ws.readyState === WebSocket.CONNECTING) &&
       this.subscribedSymbolsKey === key
     ) {
       return;
     }
 
     if (this.ws) {
-      try { this.ws.close(1000, "resubscribe"); } catch {}
+      try {
+        this.ws.close(1000, "resubscribe");
+      } catch {
+        console.log("ws coudlnt be closed");
+      }
       this.ws = undefined;
     }
 
@@ -66,7 +77,11 @@ export class FxPricesDO {
     });
 
     ws.addEventListener("error", () => {
-      try { ws.close(); } catch {}
+      try {
+        ws.close();
+      } catch {
+        console.log("ws couldnt be closed");
+      }
       if (this.ws === ws) this.ws = undefined;
       this.scheduleReconnect(symbols);
     });
@@ -78,11 +93,12 @@ export class FxPricesDO {
 
     const delayMs = 1000;
 
-  
     this.state.storage.setAlarm(Date.now() + delayMs).catch(() => {});
-    this.subscribedSymbolsKey = symbols.map((s) => s.toUpperCase()).sort().join(",");
+    this.subscribedSymbolsKey = symbols
+      .map((s) => s.toUpperCase())
+      .sort()
+      .join(",");
   }
-
 
   async alarm() {
     this.reconnecting = false;
@@ -109,7 +125,7 @@ export class FxPricesDO {
       .filter(Boolean);
 
     await this.ensureConnected(symbols);
-    
+
     const out: Record<string, Quote | null> = {};
     for (const s of symbols) out[s] = this.prices[s] ?? null;
 

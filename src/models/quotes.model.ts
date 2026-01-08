@@ -52,8 +52,6 @@ export async function createQuote(
     })
     .returning();
 
-
-
   return mapQuote(row);
 }
 

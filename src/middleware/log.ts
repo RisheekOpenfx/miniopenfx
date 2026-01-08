@@ -3,9 +3,7 @@ import type { MiddlewareHandler } from "hono";
 export const loggerMiddleware: MiddlewareHandler = async (c, next) => {
   const start = Date.now();
 
-  const requestId =
-    c.req.header("cf-ray") ??
-    crypto.randomUUID();
+  const requestId = c.req.header("cf-ray") ?? crypto.randomUUID();
 
   try {
     await next();
@@ -20,7 +18,7 @@ export const loggerMiddleware: MiddlewareHandler = async (c, next) => {
         stack: err instanceof Error ? err.stack : undefined,
       }),
     );
-    throw err; 
+    throw err;
   } finally {
     const durationMs = Date.now() - start;
 
@@ -32,7 +30,7 @@ export const loggerMiddleware: MiddlewareHandler = async (c, next) => {
         path: c.req.path,
         status: c.res.status,
         durationMs,
-        userId: c.get("userId"), 
+        userId: c.get("userId"),
         cf: {
           colo: c.req.raw.cf?.colo,
           country: c.req.raw.cf?.country,
