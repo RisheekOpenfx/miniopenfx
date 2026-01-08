@@ -8,4 +8,4 @@ bindings = [{ name = "FX_DO", class_name = "FxPricesDO" }]
 
 [[migrations]]
 tag = "v1"
-new_classes = ["FxPricesDO"]
+new_sqlite_classes = ["FxPricesDO"]
