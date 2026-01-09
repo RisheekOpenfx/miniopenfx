@@ -1,7 +1,6 @@
 import { Context } from "hono";
 import { success } from "../utilities/response";
 import { getPriceMultiple } from "../services/price.service";
-import { zsymbol } from "../types/zonSchemes";
 import { ErrorCode } from "../errors/error_codes";
 import * as z from "zod";
 

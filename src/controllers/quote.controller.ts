@@ -16,9 +16,9 @@ export async function quoteController(c: Context) {
     throw new Error(ErrorCode.ASSERTION_ERROR);
   }
   const userId = safeinput.data;
-  const { pair, side } = await c.req.json();
+  const { pair, side, amount } = await c.req.json();
 
   const db: DbLike = createDb(c.env.DATABASE_URL);
-  const quote:quoteType = await createQuoteService(db, userId, pair, side, c.env.pricecache, stub);
+  const quote:quoteType = await createQuoteService(db, userId, pair, side, amount, c.env.pricecache, stub);
   return success(c, quote, 201);
 }

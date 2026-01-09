@@ -41,6 +41,7 @@ export type quoteType = {
   user_id: string;
   pair: string;
   side: string;
+  quote: number;
   rate: number;
   status: string;
   expires_at: Date;

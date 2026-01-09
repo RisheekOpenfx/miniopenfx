@@ -6,3 +6,5 @@ export const zemail = z.email();
 export const zcreditObject = z.object({currency: z.string().length(3), amount: z.coerce.number(), reciverEmail: z.email()});
 export const zsymbol = z.string().length(3);
 export const ztrade = z.object({ quoteId: z.uuid(), amount: z.coerce.number(), reciverEmail: z.email().optional() });
+
+export const zquote = z.object({pair: z.string().min(6).max(7), side: z.literal(["BUY", "SELL"]), amount: z.coerce.number()});

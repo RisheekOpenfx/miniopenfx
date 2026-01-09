@@ -8,6 +8,7 @@ export const quotes = pgTable("quotes", {
   user_id: uuid("user_id").notNull(),
   pair: text("pair").notNull(),
   side: text("side").notNull(),
+  quote: numeric("quote", {precision: 18, scale: 8}).notNull(),
 
   // money/price → numeric (string in DB layer)
   rate: numeric("rate", { precision: 18, scale: 8 }).notNull(),
@@ -26,6 +27,7 @@ function mapQuote(row: QuoteRow): quoteType {
     side: row.side as "BUY" | "SELL",
     rate:
       typeof row.rate === "string" ? Number(row.rate) : (row.rate as number),
+      quote: typeof row.quote === "string" ? Number(row.quote): (row.quote as number),
     status: row.status,
     expires_at: row.expires_at,
   };
@@ -38,6 +40,7 @@ export async function createQuote(
     pair: string;
     side: "BUY" | "SELL";
     rate: number;
+    quote: number;
   },
 ): Promise<quoteType> {
   const [row] = await db
@@ -47,6 +50,7 @@ export async function createQuote(
       pair: data.pair,
       side: data.side,
       rate: String(data.rate),
+      quote: String(data.quote),
       status: "ACTIVE",
       expires_at: new Date(Date.now() + 50_000),
     })
@@ -70,4 +74,9 @@ export async function getQuoteById(
 
 export async function expireQuote(db: DbLike, quoteId: string): Promise<void> {
   await db.update(quotes).set({ status: "USED" }).where(eq(quotes.id, quoteId));
+}
+
+export async function getAmouontByQuote(db: DbLike, quoteId: string):Promise<quoteType|null>{
+  const [row] = await db.select().from(quotes).where(eq(quotes.id, quoteId)).limit(1);
+  return row ? mapQuote(row) : null;
 }
