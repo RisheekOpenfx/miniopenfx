@@ -53,7 +53,7 @@ export async function upsertBalance(
     .onConflictDoUpdate({
       target: [balances.user_id, balances.currency],
       set: {
-        amount: sql`balances.amount + ${delta}`,
+        amount: sql`${balances.amount} + ${delta}`,
       },
     });
 }
