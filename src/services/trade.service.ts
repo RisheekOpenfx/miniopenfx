@@ -56,6 +56,7 @@ export async function trade(
     res = await getUserBalances(db, senderId).then((balances) => {
       return balances.filter((b) => b.currency === base);
     });
+    console.log(res)
   } catch (e) {
     console.log(e, "DB Error while getUserBalances");
     throw new Error(ErrorCode.DB_ERROR);
