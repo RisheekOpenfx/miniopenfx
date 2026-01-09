@@ -34,8 +34,8 @@ export async function refreshPrice(pair: string, pricecache:KVNamespace, stub: a
     binanceBase=1;
   }
   else{
-    const {binance} = ((await getPriceMultiple(basecur+"USDT", stub, log)));
-    const cur = basecur+ "USDT";
+    const {binance} = ((await getPriceMultiple(basecur.toUpperCase()+"USDT", stub, log)));
+    const cur = basecur.toUpperCase()+ "USDT";
     if(binance[cur] === null ||binance[cur] === undefined){
       binancebool = false;
       log.info("Issue with binance");
