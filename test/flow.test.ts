@@ -18,7 +18,7 @@ describe("MiniOpenFX API Flow", () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        email: "admin34@admin.com",
+        email: "admin@admin.com",
         password: "admin123",
       }),
     });

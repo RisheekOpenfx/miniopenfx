@@ -8,7 +8,7 @@ export const balances = pgTable(
   {
     user_id: uuid("user_id").notNull(),
     currency: text("currency").notNull(),
-    amount: numeric("amount", { precision: 18, scale: 8 }).notNull(),
+    amount: numeric("amount", { precision: 18, scale: 8, mode: "number" }).notNull(),
   },
   (t) => ({
     pk: primaryKey({ columns: [t.user_id, t.currency] }),
@@ -48,7 +48,7 @@ export async function upsertBalance(
     .values({
       user_id,
       currency,
-      amount: String(delta),
+      amount: delta,
     })
     .onConflictDoUpdate({
       target: [balances.user_id, balances.currency],
