@@ -56,7 +56,7 @@ export async function otherTradeController(c: Context) {
   }
   const { quoteId, amount, reciverEmail } = safeinput.data;
   if(reciverEmail === null || reciverEmail === undefined){
-    throw new Error("")
+    throw new Error(ErrorCode.ASSERTION_ERROR)
   }
   const receiver = await getUserByEmail(db, reciverEmail);
   if (receiver?.id === undefined) {

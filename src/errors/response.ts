@@ -130,7 +130,7 @@ export const ERROR_RESPONSE_MAP: Record<
     status: HttpStatus.DUMB_USER,
     body: {
       success: false,
-      message: "DB Error",
+      message: "Issue faced while asserting",
     },
   },
 };
