@@ -70,6 +70,7 @@ export async function trade(
   if (res[0].amount < amount) {
     throw new Error(ErrorCode.INSUFFICIENT_BALANCE);
   }
+  console.log(amount)
   try {
     await createLedgerEntry(db, {
       userId: senderId,
