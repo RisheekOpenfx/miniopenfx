@@ -61,11 +61,11 @@ export async function trade(
     console.log(e, "DB Error while getUserBalances");
     throw new Error(ErrorCode.DB_ERROR);
   }
-  if (res[0] === undefined) {
+  if (res === undefined) {
     throw new Error(ErrorCode.INSUFFICIENT_BALANCE);
   }
 
-  if (res[0].amount < amount) {
+  if (res.amount < amount) {
     throw new Error(ErrorCode.INSUFFICIENT_BALANCE);
   }
   try {
