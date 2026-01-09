@@ -9,7 +9,7 @@ export async function priceController(c: Context) {
   const id = c.env.FX_DO.idFromName("binance-fx");
   const stub = c.env.FX_DO.get(id);
   const input = c.req.query("symbols");
-  const safeinput = zsymbol.safeParse(input)
+  const safeinput = z.string().min(6).max(7).safeParse(input);
   if(safeinput instanceof z.ZodError || safeinput.data === undefined){
     throw new Error(ErrorCode.ASSERTION_ERROR);
   }
