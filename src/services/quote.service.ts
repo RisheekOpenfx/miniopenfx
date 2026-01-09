@@ -3,6 +3,7 @@ import { createQuote } from "../models/quotes.model.js";
 import { ErrorCode } from "../errors/error_codes.js";
 import { DbLike, quoteType } from "../types/types.js";
 import type { PriceEntry } from "../types/types.js";
+import { Logger } from "pino";
 
 const BUY_SPREAD: number = 0.0002;
 const SELL_SPREAD: number = 0.0002;
@@ -15,11 +16,10 @@ export async function createQuoteService(
   amount: number,
   priceCache: KVNamespace,
   stub:any,
+  log: Logger
 ): Promise<quoteType> {
   if (!await isFresh(pair, priceCache)) {
-    console.log("true");
     await refreshPrice(pair, priceCache, stub);
-    console.log("true2");
   }
   const price: PriceEntry | null = await getPrice(pair, priceCache);
   if (price === null) {
@@ -32,7 +32,7 @@ export async function createQuoteService(
   try {
     quote = await createQuote(db, { userId, pair, side, rate,quote: amount*rate });
   } catch (e) {
-    console.log(e, "DB Error while CreateQuote");
+    log.info(e, "DB Error while CreateQuote");
     throw new Error(ErrorCode.DB_ERROR);
   }
   return quote;

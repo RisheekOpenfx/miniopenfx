@@ -1,41 +1,28 @@
+import pino from "pino";
 import type { MiddlewareHandler } from "hono";
 
+const baseLogger = pino({
+  level: "info",
+});
+
 export const loggerMiddleware: MiddlewareHandler = async (c, next) => {
+  const requestId = c.var.requestId;
   const start = Date.now();
 
-  const requestId = c.req.header("cf-ray") ?? crypto.randomUUID();
+  const log = baseLogger.child({
+    requestId,
+    method: c.req.method,
+    path: new URL(c.req.url).pathname,
+  });
+
+  c.set("logger", log);
 
   try {
     await next();
-  } catch (err) {
-    console.error(
-      JSON.stringify({
-        level: "error",
-        requestId,
-        method: c.req.method,
-        path: c.req.path,
-        error: err instanceof Error ? err.message : String(err),
-        stack: err instanceof Error ? err.stack : undefined,
-      }),
-    );
-    throw err;
   } finally {
-    const durationMs = Date.now() - start;
+    const ms = Date.now() - start;
+    const status = c.res?.status;
 
-    console.log(
-      JSON.stringify({
-        level: "info",
-        requestId,
-        method: c.req.method,
-        path: c.req.path,
-        status: c.res.status,
-        durationMs,
-        userId: c.get("userId"),
-        cf: {
-          colo: c.req.raw.cf?.colo,
-          country: c.req.raw.cf?.country,
-        },
-      }),
-    );
+    log.info({ status, ms }, "request completed");
   }
 };

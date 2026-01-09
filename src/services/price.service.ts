@@ -1,11 +1,11 @@
-import { ErrorCode } from "../errors/error_codes.js";
+import { Logger } from "pino";
 import type { PriceEntry } from "../types/types.js";
 
 const CACHE_TTL_MS: number = 60000;
 
 const priceCache: Record<string, PriceEntry> = {};
 
-export async function refreshPrice(pair: string, pricecache:KVNamespace, stub: any): Promise<number> {
+export async function refreshPrice(pair: string, pricecache:KVNamespace, stub: any, log: Logger): Promise<number> {
   const { base, quote } = parsePair(pair);
   var coinGeko:boolean = true;
   var binancebool: boolean = true;
@@ -16,7 +16,7 @@ export async function refreshPrice(pair: string, pricecache:KVNamespace, stub: a
   if (!res.ok) {
     coinGeko = false
     // throw new Error(`CoinGecko API error: ${data?.error || res.statusText}`);
-    console.log(`CoinGecko API error: ${data?.error || res.statusText}`);
+    log.info(`CoinGecko API error: ${data?.error || res.statusText}`);
   }
   const basecur: string = base.toLocaleLowerCase();
   const quotecur: string = quote.toLocaleLowerCase();
@@ -27,18 +27,18 @@ export async function refreshPrice(pair: string, pricecache:KVNamespace, stub: a
   ) {
     coinGeko = false;
     // throw new Error("Invalid CoinGecko response");
-    console.log("Invalid CoinGecko response");
+    log.info("Invalid CoinGecko response");
   }
   let binanceBase: number;
   if(basecur.toUpperCase() === "USD"){
     binanceBase=1;
   }
   else{
-    const {binance} = ((await getPriceMultiple("USDT"+basecur, stub)));
+    const {binance} = ((await getPriceMultiple("USDT"+basecur, stub, log)));
     const cur = "USDT" + basecur;
     if(binance[cur] === null ||binance[cur] === undefined){
       binancebool = false;
-      console.log("Issue with binance");
+      log.info("Issue with binance");
     }
     else{
       binanceBase = Number(binance[cur].mid);
@@ -51,11 +51,11 @@ export async function refreshPrice(pair: string, pricecache:KVNamespace, stub: a
     binanceQuote = 1;
   }
   else{
-    const {binance} = ((await getPriceMultiple(quotecur.toUpperCase()+"USDT", stub)));
+    const {binance} = ((await getPriceMultiple(quotecur.toUpperCase()+"USDT", stub, log)));
     const cur = quotecur.toUpperCase() + "USDT";
     if(binance[cur] === null ||binance[cur] === undefined){
       binancebool = false;
-      console.log("Issue with binance", binance, cur, binance[cur]);
+      log.info("Issue with binance");
     }
     else{
       binanceQuote = Number(binance[cur].mid);
@@ -78,15 +78,15 @@ export async function refreshPrice(pair: string, pricecache:KVNamespace, stub: a
   }
 
   await setPrice(pair, rate, pricecache);
-  console.log(rate)
+  log.info(rate)
   return rate;
 }
 
-export async function isFresh(pair: string, pricecache:KVNamespace): Promise<boolean> {
-  console.log("isfresh", pair)
+export async function isFresh(pair: string, pricecache:KVNamespace, log:Logger): Promise<boolean> {
+  log.info("isfresh" +  pair)
   const entry: PriceEntry|null = await getPrice(pair, pricecache);
   if (!entry) return false;
-  console.log(false);
+  log.info(false);
   return Date.now() - entry.ts < CACHE_TTL_MS;
 }
 
@@ -130,6 +130,7 @@ function parsePair(pair: string): { base: string; quote: string } {
 export async function getPriceMultiple(
   bookTicker: string | undefined,
   stub: any,
+  log: Logger
 ) {
   let symbols = bookTicker;
   type BinanceQuote = { bid: string; ask: string; mid: string; ts: number };
@@ -139,6 +140,10 @@ export async function getPriceMultiple(
 
     const binanceRes = await stub.fetch(`https://do.local/?symbols=${symbols}`);
     binance = await binanceRes.json();
+  }
+  else{
+    log.info("Unrecognized symbol");
+    throw new Error();
   }
 
   const cgUrl = new URL("https://api.coingecko.com/api/v3/simple/price");

@@ -6,17 +6,19 @@ import { getUserByEmail, createUser } from "../models/users.model.js";
 import type { userdata, userType } from "../types/types.js";
 import { createSession } from "../models/sessions.model.js";
 import { DbLike } from "../types/types.js";
+import { Logger } from "pino";
 
 export async function signupUserService(
   db: DbLike,
   email: string,
   password: string,
+  log: Logger
 ): Promise<userdata> {
   let existingUser: userType | null;
   try {
     existingUser = await getUserByEmail(db, email);
   } catch (e) {
-    console.log(e, "DB Error while getUserByEmail");
+    log.info(e, "DB Error while getUserByEmail");
     throw new Error(ErrorCode.DB_ERROR);
   }
   if (existingUser) {
@@ -28,7 +30,7 @@ export async function signupUserService(
   try {
     user = await createUser(db, email, hash, "user");
   } catch (e) {
-    console.log(e, "DB Error while createUser");
+    log.info(e, "DB Error while createUser");
     throw new Error(ErrorCode.DB_ERROR);
   }
   return user;
@@ -38,6 +40,7 @@ export async function loginService(
   db: DbLike,
   email: string,
   password: string,
+  log: Logger
 ): Promise<string> {
   const user: userType | null = await getUserByEmail(db, email);
   if (!user) {
@@ -65,7 +68,7 @@ export async function loginService(
       new Date(d.setDate(d.getDate() + 1)),
     );
   } catch (e) {
-    console.log(e, "DB Error while createSession");
+    log.info(e, "DB Error while createSession");
     throw new Error(ErrorCode.DB_ERROR);
   }
 

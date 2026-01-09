@@ -12,6 +12,7 @@ import {
   tradeType,
   userBalanceType,
 } from "../types/types.js";
+import { Logger } from "pino";
 
 export async function trade(
   db: DbLike,
@@ -20,12 +21,13 @@ export async function trade(
   idempotencyKey: string | undefined,
   quoteId: string,
   amount: number,
+  log:Logger
 ): Promise<string> {
   let dup: tradeType | null;
   try {
     dup = await getTradeByIdempotencyKey(db, idempotencyKey!);
   } catch (e) {
-    console.log(e, "DB Error while getTradeByIdempotencyKey");
+    log.info(e, "DB Error while getTradeByIdempotencyKey");
     throw new Error(ErrorCode.DB_ERROR);
   }
   if (dup !== null) {
@@ -35,7 +37,7 @@ export async function trade(
   try {
     q = await getQuoteById(db, quoteId);
   } catch (e) {
-    console.log(e, "DB Error while getQuoteById");
+    log.info(e, "DB Error while getQuoteById");
     throw new Error(ErrorCode.DB_ERROR);
   }
   if (q === undefined || q === null || q.status !== "ACTIVE") {

@@ -9,6 +9,7 @@ import { ErrorCode } from "../errors/error_codes";
 
 export async function devAddMoneyController(c: Context) {
   const headerInput = c.get("userId");
+  const log = c.get("logger");
   const userId = zuuid.safeParse(headerInput);
   if(userId instanceof z.ZodError || userId.data === undefined){
     throw new Error(ErrorCode.ASSERTION_ERROR);
@@ -22,6 +23,6 @@ export async function devAddMoneyController(c: Context) {
   }
 
   const { currency, amount, reciverEmail } = safeinput.data;
-  await devAddMoneyService(db, reciverEmail, currency, amount, userId.data);
+  await devAddMoneyService(db, reciverEmail, currency, amount, userId.data, log);
   return success(c, "Credited!", 201);
 }

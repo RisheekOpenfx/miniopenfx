@@ -3,6 +3,7 @@ import { getUserByEmail, getUserById } from "../models/users.model";
 import { upsertBalance } from "../models/balances.model";
 import { ErrorCode } from "../errors/error_codes";
 import { DbLike, userType } from "../types/types";
+import { Logger } from "pino";
 
 export async function devAddMoneyService(
   db: DbLike,
@@ -10,12 +11,13 @@ export async function devAddMoneyService(
   currency: string,
   amount: number,
   userId: string,
+  log: Logger
 ): Promise<string> {
   let user: userType | null;
   try {
     user = await getUserById(db, userId);
   } catch (e) {
-    console.log(e, "DB Error while getUserById");
+    log.info(e, "DB Error while getUserById");
     throw new Error(ErrorCode.DB_ERROR);
   }
   if (user === null) {
@@ -33,7 +35,7 @@ export async function devAddMoneyService(
     }
   }
   catch(e){
-    console.log(e);
+    log.info(e);
     throw new Error(ErrorCode.DB_ERROR);
   }
   const reciverId = reciver.id
@@ -46,13 +48,13 @@ export async function devAddMoneyService(
       receiverId: reciverId,
     });
   } catch (e) {
-    console.log(e, "DB Error while createLedgerEntry");
+    log.info(e, "DB Error while createLedgerEntry");
     throw new Error(ErrorCode.DB_ERROR);
   }
   try {
     await upsertBalance(db, reciverId, currency, amount);
   } catch (e) {
-    console.log(e, "DB Error while upsertBalance");
+    log.info(e, "DB Error while upsertBalance");
     throw new Error(ErrorCode.DB_ERROR);
   }
   return "Credited!";

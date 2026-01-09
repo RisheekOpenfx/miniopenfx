@@ -9,8 +9,11 @@ import { zuuid } from "../types/zonSchemes.js";
 import * as z from "zod";
 import { ztrade } from "../types/zonSchemes.js";
 import { getAmouontByQuote } from "../models/quotes.model.js";
+import { log } from "console";
+import { Logger } from "pino";
 
 export async function selfTradeController(c: Context) {
+  const log:Logger = c.get("logger");
   const db: DbLike = createDb(c.env.DATABASE_URL);
   const idInput = c.get("userId");
   const safeIdInput = zuuid.safeParse(idInput);
@@ -34,7 +37,7 @@ export async function selfTradeController(c: Context) {
   const quote = (await getAmouontByQuote(db, quoteId))!;
   const amount = quote.quote / quote.rate;
 
-  await trade(db, userId, userId, idempotencyKey, quoteId, amount);
+  await trade(db, userId, userId, idempotencyKey, quoteId, amount, log);
 
   return success(c, "Executed", 201);
 }
@@ -42,6 +45,7 @@ export async function selfTradeController(c: Context) {
 export async function otherTradeController(c: Context) {
   const idInput = c.get("userId");
   const safeIdInput = zuuid.safeParse(idInput);
+  const log = c.get("logger");
   if(safeIdInput instanceof z.ZodError || safeIdInput.data === undefined){
     throw new Error(ErrorCode.ASSERTION_ERROR);
   }
@@ -69,7 +73,7 @@ export async function otherTradeController(c: Context) {
   const receiverId = receiver.id;
   const amount = Number(await getAmouontByQuote(db, quoteId));
 
-  await trade(db, userId, receiverId, idempotencyKey, quoteId, amount);
+  await trade(db, userId, receiverId, idempotencyKey, quoteId, amount, log);
 
   return success(c, "Executed", 201);
 }

@@ -12,19 +12,21 @@ export async function signupController(c: Context) {
   const db: DbLike = createDb(c.env.DATABASE_URL);
   const input = await c.req.json();
   const safeInput = zcredentials.safeParse(input);
+  const log = c.get("logger");
 
   if(safeInput instanceof z.ZodError || safeInput.data === undefined){
     throw new Error(ErrorCode.ASSERTION_ERROR);
   }
   const {email, password} = safeInput.data;
 
-  await signupUserService(db, email, password);
+  await signupUserService(db, email, password, log);
 
   return success(c, { message: "User created" }, HttpStatus.CREATED);
 }
 
 export async function loginController(c: Context) {
   const db: DbLike = createDb(c.env.DATABASE_URL);
+  const log = c.get("logger");
   const input = await c.req.json();
   const safeInput = zcredentials.safeParse(input);
 
@@ -33,7 +35,7 @@ export async function loginController(c: Context) {
   }
   const {email, password} = safeInput.data;
 
-  const token = await loginService(db, email, password);
+  const token = await loginService(db, email, password, log);
 
   return success(c, { token: token }, HttpStatus.OK);
 }

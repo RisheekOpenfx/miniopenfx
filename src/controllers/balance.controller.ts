@@ -10,6 +10,7 @@ import { ErrorCode } from "../errors/error_codes";
 
 export async function creditBalanceController(c: Context) {
   const db: DbLike = createDb(c.env.DATABASE_URL);
+  const log = c.get("logger");
   const input = c.get("userId");
   const userId = zuuid.safeParse(input);
   if(userId instanceof z.ZodError || userId.data === undefined){
@@ -18,7 +19,7 @@ export async function creditBalanceController(c: Context) {
 
 
 
-  const res = await getBalancebyUserService(db, userId.data);
+  const res = await getBalancebyUserService(db, userId.data, log);
 
   return success(c, { balances: res }, 200);
 }
