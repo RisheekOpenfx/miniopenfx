@@ -30,7 +30,7 @@ export async function refreshPrice(pair: string, pricecache:KVNamespace, stub: a
     console.log("Invalid CoinGecko response");
   }
   let binanceBase: number;
-  if(basecur === "USD"){
+  if(basecur.toUpperCase() === "USD"){
     binanceBase=1;
   }
   else{
