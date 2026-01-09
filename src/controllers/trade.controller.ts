@@ -44,7 +44,8 @@ export async function TradeController(c: Context) {
   }
   receiverId = receiver.id;
   }
-  const amount = Number(await getAmouontByQuote(db, quoteId));
+  const quote = (await getAmouontByQuote(db, quoteId))!;
+  const amount = quote.quote / quote.rate;
 
   await trade(db, userId, receiverId, idempotencyKey, quoteId, amount, log);
 
