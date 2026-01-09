@@ -55,7 +55,7 @@ export async function refreshPrice(pair: string, pricecache:KVNamespace, stub: a
     const cur = quotecur + "USDT";
     if(binance[cur] === null ||binance[cur] === undefined){
       binancebool = false;
-      console.log("Issue with binance");
+      console.log("Issue with binance", binance);
     }
     else{
       binanceQuote = Number(binance[cur].mid);
