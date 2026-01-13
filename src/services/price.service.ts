@@ -116,7 +116,7 @@ export async function setPrice(pair: string, rate: number, pricecache: KVNamespa
 }
 
 
-function parsePair(pair: string): { base: string; quote: string } {
+export function parsePair(pair: string): { base: string; quote: string } {
   const symbol: string = pair.replace("/", "");
   if (symbol.length !== 6) {
     throw new Error(`Invalid pair: ${pair}`);

@@ -66,17 +66,5 @@ describe("MiniOpenFX API", () => {
         Authorization: `Bearer ${token}`,
       },
     })
-    expect(res.status).toBe(200);
-    console.log((await res.json()).data)
-  });
-  it("Get Balance", async() => {
-    const res = await fetch(`${BASE_URL}/history`,{
-      method: "GET",
-      headers:{
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    expect(res.status).toBe(200);
-    console.log((await res.json()).data)
-  });
+    expect(res.status).toBe(200);  });
 });

@@ -1,0 +1,1122 @@
+{
+  "info": {
+    "_postman_id": "7dd3d5aa-954c-4fe6-b178-cba4ce859067",
+    "name": "MiniOpenFX",
+    "description": "A foreign exchange (FX) trading API built with Hono framework. Supports user authentication, balance management, price quotes, and trade execution.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "a5a23987-7a63-46aa-b312-4f72c99cd6ed",
+                "exec": [
+                  "// Health Check Tests",
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response time is under 500ms', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});",
+                  "",
+                  "pm.test('Response contains health status', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('object');",
+                  "    const hasStatus = jsonData.hasOwnProperty('ok')",
+                  "",
+                  "    pm.expect(hasStatus).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('Health status indicates healthy', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.ok !== undefined) {",
+                  "        pm.expect(jsonData.ok).to.be.true;",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "e8adf24d-5f30-4853-9759-edb54bfcb99c",
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "id": "8c40ad76-29bf-4706-b272-6056e54329cd",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            },
+            "description": "Check if the API server is running. This is a public endpoint that does not require authentication."
+          },
+          "response": [
+            {
+              "id": "f847ef80-aae3-4ce9-aeae-f8071aa6ebf9",
+              "name": "Healthy Status",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/health",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "health"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"ok\": true\n}"
+            }
+          ]
+        }
+      ],
+      "id": "c897dee4-f914-4f25-a801-f75d25f44ed1"
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Signup",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "6b8866cf-b042-49c5-b3c7-5a9071921654",
+                "exec": [
+                  "// Signup Tests",
+                  "pm.test('Status code is 200 or 201 (success) or 409 (user exists)', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "    pm.test('Response contains user data', function () {",
+                  "        const jsonData = pm.response.json().data;",
+                  "        pm.expect(jsonData).to.be.an('object');",
+                  "        const message = jsonData.hasOwnProperty('message');",
+                  "        pm.expect(message).to.be.true;",
+                  "        const created = jsonData.message;",
+                  "        pm.expect(created).to.equal('User created');",
+                  "    });",
+                  "",
+                  "",
+                  "}",
+                  "",
+                  "if (pm.response.code === 409) {",
+                  "    pm.test('User already exists response', function () {",
+                  "        const jsonData = pm.response.json();",
+                  "        pm.expect(jsonData).to.have.property('message');",
+                  "        pm.expect(jsonData.message).to.equal('Resource already exists');",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "446dad62-379d-451b-b59a-54540a30b012",
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "id": "8e1ec1ba-9db4-49ce-b913-d23acb6c8057",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user4@example.com\",\n  \"password\": \"pass123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/signup",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "signup"
+              ]
+            },
+            "description": "Register a new user account. This is a public endpoint. Password must be at least 3 characters."
+          },
+          "response": [
+            {
+              "id": "a2b2d294-5ce9-4224-ac7e-79a043d1d75c",
+              "name": "User Created Successfully",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"newuser@example.com\",\n  \"password\": \"securepass123\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/auth/signup",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "signup"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"data\": {\n        \"message\": \"User created\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "1815ed97-e3c9-4d80-add7-b870c484e7a4",
+                "exec": [
+                  "// Login Tests",
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is valid JSON', function () {",
+                  "    pm.response.to.be.json;",
+                  "});",
+                  "",
+                  "pm.test('Response contains token', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('object');",
+                  "    const hasData = jsonData.hasOwnProperty('data');",
+                  "    pm.expect(hasData).to.be.true;",
+                  "    const hasToken = jsonData.data.hasOwnProperty('token');",
+                  "    pm.expect(hasToken).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('Token is a non-empty string', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    const token = jsonData.data.token;",
+                  "    pm.expect(token).to.be.a('string');",
+                  "    pm.expect(token.length).to.be.greaterThan(0);",
+                  "});",
+                  "",
+                  "pm.test('Token is saved to collection variable for subsequent requests', function () {",
+                  "    const jsonData = pm.response.json().data;",
+                  "    const token = jsonData.token;",
+                  "    if (token) {",
+                  "        pm.environment.set('token', token);",
+                  "        console.log('Token saved successfully for authenticated requests');",
+                  "    }",
+                  "    pm.expect(pm.environment.get('token')).to.not.be.empty;",
+                  "});",
+                  "",
+                  "",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "46305ce1-8939-4dd4-a6fd-cafa6c6fa759",
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "id": "296094fc-96b7-45d1-b486-c6f778f5c794",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@admin.com\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Authenticate user and receive a JWT token. This is a public endpoint. Use the returned token in the Authorization header for protected endpoints."
+          },
+          "response": [
+            {
+              "id": "5a997e62-0d1c-47ac-9a7d-c80a8b81a67c",
+              "name": "Login Successful",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"admin@admin.com\",\n  \"password\": \"admin123\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/auth/login",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"data\": {\n        \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjMDBiYjBkNi1mNGNhLTQ3YjEtOGUyYy0zNmJjMzlhNmRhNjIiLCJzZXNzaW9uSWQiOiI3ODNlZWZlMi01NzJhLTRjMzQtYWIzZS0wNWY0NWI1OGI5OWMiLCJpYXQiOjE3NjgyOTQ5NzksImV4cCI6MTc2ODM4MTM3OX0.PrOywCCM0zxkK7Px8agr9nQagBSkkaZUPLvznuNXKHU\"\n    }\n}"
+            }
+          ]
+        }
+      ],
+      "id": "13962cd2-6fb4-4f31-b648-fccc88ed94d5"
+    },
+    {
+      "name": "Balances",
+      "item": [
+        {
+          "name": "Get Balances",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "787ff412-734f-462b-85af-09fc12d6076b",
+                "exec": [
+                  "// Get Balances Tests",
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is valid JSON', function () {",
+                  "    pm.response.to.be.json;",
+                  "});",
+                  "",
+                  "pm.test('Response contains balance data', function () {",
+                  "    const jsonData = pm.response.json().data;",
+                  "    const isArray = Array.isArray(jsonData.balances);",
+                  "    pm.expect(isArray).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('Balance entries have valid structure', function () {",
+                  "    const balances = pm.response.json().data.balances;",
+                  "    ",
+                  "    if (Array.isArray(balances) && balances.length >= 0) {",
+                  "        balances.forEach(function(balance) {",
+                  "            // Check for currency identifier",
+                  "            const hasCurrency = balance.hasOwnProperty('currency');",
+                  "            const hasAmount = balance.hasOwnProperty('amount');",
+                  "            pm.expect(hasCurrency || hasAmount).to.be.true;",
+                  "            const amount = balance.amount;",
+                  "        });",
+                  "    }",
+                  "});",
+                  "",
+                  "pm.test('Balance amounts are numeric', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    const balances = Array.isArray(jsonData) ? jsonData : (jsonData.balances || []);",
+                  "    ",
+                  "    if (Array.isArray(balances) && balances.length > 0) {",
+                  "        balances.forEach(function(balance) {",
+                  "            const amount = balance.amount;",
+                  "                pm.expect(typeof amount).to.equal(['number']);",
+                  "                pm.expect(Number.isNaN(amount)).to.be.false;",
+                  "        });",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "8db0c451-0f42-461f-885a-a62eff655501",
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "id": "9e06e424-0941-428c-bc60-59b0381f4f75",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/balances",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "balances"
+              ]
+            },
+            "description": "Retrieve all currency balances for the authenticated user. Requires authentication."
+          },
+          "response": [
+            {
+              "id": "61feff6f-a0c9-42fd-810a-4412adb9a3ef",
+              "name": "Account Balances",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/balances",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "balances"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"data\": {\n        \"balances\": [\n            {\n                \"user_id\": \"c00bb0d6-f4ca-47b1-8e2c-36bc39a6da62\",\n                \"currency\": \"EUR\",\n                \"amount\": 7.01345558841035\n            },\n            {\n                \"user_id\": \"c00bb0d6-f4ca-47b1-8e2c-36bc39a6da62\",\n                \"currency\": \"USD\",\n                \"amount\": 88.43761511787075\n            }\n        ]\n    }\n}"
+            }
+          ]
+        }
+      ],
+      "id": "7c87d3cc-eb5f-42eb-99e4-4c9a5fc8ff4e"
+    },
+    {
+      "name": "Price",
+      "item": [
+        {
+          "name": "Get Price",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "5cbb2952-b53a-4953-87d2-7157aada4fdf",
+                "exec": [
+                  "// Get Price Tests",
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is valid JSON', function () {",
+                  "    pm.response.to.be.json;",
+                  "});",
+                  "",
+                  "pm.test('Response contains price data', function () {",
+                  "    const jsonData = pm.response.json().data.binance;",
+                  "    pm.expect(jsonData).to.be.an('object');",
+                  "    for(price of Object.keys(jsonData)){",
+                  "        pm.expect(jsonData[price]).to.have.property('mid');",
+                  "    }",
+                  "});",
+                  "",
+                  "pm.test('Price values are numeric', function () {",
+                  "    const jsonData = pm.response.json().data.binance;",
+                  "    for(price of Object.keys(jsonData)){",
+                  "        const mid = jsonData[price].mid;",
+                  "        pm.expect(typeof mid).to.be.oneOf(['number','string']);",
+                  "        pm.expect(parseFloat(mid)).to.be.a(\"number\");",
+                  "        pm.expect(parseFloat(mid)).to.be.greaterThan(0);",
+                  "    }",
+                  "});",
+                  "",
+                  "pm.test('Requested symbol is in response', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    const requestedSymbol = pm.request.url.query.get('symbols');",
+                  "    ",
+                  "    if (requestedSymbol) {",
+                  "        const responseStr = JSON.stringify(jsonData);",
+                  "        const hasSymbol = responseStr.includes(requestedSymbol) ||",
+                  "                          jsonData.symbol === requestedSymbol ||",
+                  "                          jsonData.pair === requestedSymbol ||",
+                  "                          (jsonData.prices && jsonData.prices[requestedSymbol]);",
+                  "        pm.expect(hasSymbol).to.be.true;",
+                  "    }",
+                  "});",
+                  "",
+                  "pm.test('Response may contain timestamp', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.timestamp || jsonData.time || jsonData.updatedAt) {",
+                  "        const timestamp = jsonData.timestamp || jsonData.time || jsonData.updatedAt;",
+                  "        pm.expect(timestamp).to.not.be.undefined;",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "83db47c8-3558-4212-ba03-b73602924347",
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "id": "238ed714-2a24-464e-988e-54d3500d7346",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/price?symbols=EURUSDT",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "price"
+              ],
+              "query": [
+                {
+                  "key": "symbols",
+                  "value": "EURUSDT",
+                  "description": "Currency pair symbol (6-7 characters, e.g., BTCUSD, EURUSD)",
+                  "uuid": "971a6b94-f94f-4dd5-ac67-2839e64447a8"
+                }
+              ]
+            },
+            "description": "Get current price for a currency pair. Requires authentication. Symbol must be 6-7 characters."
+          },
+          "response": [
+            {
+              "id": "dbbdb416-9638-4b15-aac6-fab35f0aa870",
+              "name": "Price Data for BTCUSD",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/price?symbols=EURUSD",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "price"
+                  ],
+                  "query": [
+                    {
+                      "key": "symbols",
+                      "value": "EURUSD"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"data\": {\n        \"symbols\": \"BTCUSD\",\n        \"binance\": {\n            \"BTCUSD\": {\n                \"bid\": \"92165.29000000\",\n                \"ask\": \"92195.56000000\",\n                \"mid\": \"92180.42499999999\",\n                \"ts\": 1768297905061\n            }\n        },\n        \"coingecko\": {\n            \"status\": {\n                \"error_code\": 403,\n                \"error_message\": \"Please add a descriptive User-Agent to your request. For higher rate limits & stable integration, please subscribe to our API plans: https://www.coingecko.com/en/api/pricing . If you think this is a mistake, please report here: https://forms.gle/3V2z8Mb3k2RMu5S2A\"\n            }\n        }\n    }\n}"
+            }
+          ]
+        }
+      ],
+      "id": "d2a3e84e-03d8-4369-ba9b-88d2c7299701"
+    },
+    {
+      "name": "Quotes",
+      "item": [
+        {
+          "name": "Create Quote",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "84bd8a63-11b0-4a2a-a874-fb2cc906ed71",
+                "exec": [
+                  "// Create Quote Tests",
+                  "pm.test('Status code is 200 or 201', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test('Response is valid JSON', function () {",
+                  "    pm.response.to.be.json;",
+                  "});",
+                  "",
+                  "pm.test('Response contains quote ID', function () {",
+                  "    const jsonData = pm.response.json().data;",
+                  "    pm.expect(jsonData).to.be.an('object');",
+                  "    const hasQuoteId = jsonData.hasOwnProperty('id');",
+                  "    pm.expect(hasQuoteId).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('Response contains price information', function () {",
+                  "    const jsonData = pm.response.json().data;",
+                  "    const hasData = jsonData.hasOwnProperty('pair') &&",
+                  "                     jsonData.hasOwnProperty('rate') &&",
+                  "                     jsonData.hasOwnProperty('side') &&",
+                  "                     jsonData.hasOwnProperty('quote');",
+                  "    pm.expect(hasData).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('Response contains timestamp or expiry', function () {",
+                  "    const jsonData = pm.response.json().data;",
+                  "    const hasTimestamp = jsonData.hasOwnProperty('expires_at')",
+                  "    pm.expect(hasTimestamp).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('Quote contains pair and side from request', function () {",
+                  "    const jsonData = pm.response.json().data;",
+                  "    const requestBody = JSON.parse(pm.request.body.raw);",
+                  "    ",
+                  "    if (jsonData.pair) {",
+                  "        pm.expect(jsonData.pair).to.eql(requestBody.pair);",
+                  "    }",
+                  "    if (jsonData.side) {",
+                  "        pm.expect(jsonData.side).to.eql(requestBody.side);",
+                  "    }",
+                  "});",
+                  "",
+                  "// Save quote ID for trade execution",
+                  "pm.test('Quote ID saved for trade execution', function () {",
+                  "    const jsonData = pm.response.json().data;",
+                  "    const quoteId = jsonData.id;",
+                  "    if (quoteId) {",
+                  "        pm.environment.set('quoteId', quoteId);",
+                  "        console.log('Quote ID saved: ' + quoteId);",
+                  "    }",
+                  "    pm.expect(quoteId).to.not.be.undefined;",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "be52fe57-396a-4752-a9e6-bb51a84a4c67",
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "id": "aada6ad5-82ae-42cb-a0cb-a4ae52ce7c2f",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pair\": \"USDBTC\",\n  \"side\": \"BUY\",\n  \"amount\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/quotes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quotes"
+              ]
+            },
+            "description": "Create a new quote for a currency pair trade. Requires authentication. Side must be 'BUY' or 'SELL'. Pair must be 6-7 characters."
+          },
+          "response": []
+        }
+      ],
+      "id": "eda9c5db-6b51-4163-8823-30dcc97aeafe"
+    },
+    {
+      "name": "Trades",
+      "item": [
+        {
+          "name": "Execute Trade",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "7fb0dbb5-2c7a-470e-8793-475069f3aeb4",
+                "exec": [
+                  "// Generate unique idempotency key for this trade",
+                  "const idempotencyKey = pm.variables.replaceIn('{{$guid}}');",
+                  "pm.collectionVariables.set('tradeIdempotencyKey', idempotencyKey);",
+                  "console.log('Generated Idempotency Key: ' + idempotencyKey);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "e0566b0c-b104-477b-b134-418889da2d41",
+                "exec": [
+                  "// Execute Trade Tests",
+                  "pm.test('Status code is 200 or 201', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test('Response is valid JSON', function () {",
+                  "    pm.response.to.be.json;",
+                  "});",
+                  "",
+                  "pm.test('Response contains trade confirmation', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('object');",
+                  "    // Check for trade ID or confirmation",
+                  "    const hasTradeInfo = jsonData.hasOwnProperty('id') || ",
+                  "                         jsonData.hasOwnProperty('tradeId') ||",
+                  "                         jsonData.hasOwnProperty('trade_id') ||",
+                  "                         jsonData.hasOwnProperty('transactionId') ||",
+                  "                         jsonData.hasOwnProperty('success') ||",
+                  "                         jsonData.hasOwnProperty('message');",
+                  "    pm.expect(hasTradeInfo).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('Trade execution details present', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    const hasExecutionDetails = jsonData.hasOwnProperty('data');",
+                  "    pm.expect(hasExecutionDetails).to.be.true;",
+                  "    pm.expect(jsonData.data).to.equal('Executed');",
+                  "});",
+                  "",
+                  "pm.test('Trade status is successful', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.status) {",
+                  "        pm.expect(jsonData.status.toLowerCase()).to.be.oneOf(['success', 'completed', 'executed', 'filled']);",
+                  "    }",
+                  "    if (jsonData.success !== undefined) {",
+                  "        pm.expect(jsonData.success).to.be.true;",
+                  "    }",
+                  "});",
+                  "",
+                  "// Save trade ID for reference",
+                  "const jsonData = pm.response.json();",
+                  "const tradeId = jsonData.id || jsonData.tradeId || jsonData.trade_id || jsonData.transactionId;",
+                  "if (tradeId) {",
+                  "    pm.collectionVariables.set('lastTradeId', tradeId);",
+                  "    console.log('Trade ID saved: ' + tradeId);",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "id": "f19df08b-2cca-473b-833e-dcf47183297d",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}",
+                "description": "Unique key to prevent duplicate trade execution"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quoteId\": \"{{quoteId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/trades",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "trades"
+              ]
+            },
+            "description": "Execute a trade based on a previously created quote. Requires authentication and an Idempotency-Key header. The reciverEmail is optional - if not provided, the trade is executed for the authenticated user."
+          },
+          "response": []
+        }
+      ],
+      "id": "59497eb3-46d2-40af-99cc-22c45c20aef5"
+    },
+    {
+      "name": "History",
+      "item": [
+        {
+          "name": "Get Transaction History",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "3c0fa7da-d9aa-45bf-a022-6fbffaead8a7",
+                "exec": [
+                  "// Get Transaction History Tests",
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is valid JSON', function () {",
+                  "    pm.response.to.be.json;",
+                  "});",
+                  "",
+                  "pm.test('Response is an array or contains history array', function () {",
+                  "    const jsonData = pm.response.json().data;",
+                  "    const isArray = Array.isArray(jsonData);",
+                  "    pm.expect(isArray).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('History entries have valid structure', function () {",
+                  "    const history = pm.response.json().data;",
+                  "    ",
+                  "    if (history.length > 0) {",
+                  "        history.forEach(function(entry) {",
+                  "            pm.expect(entry).to.be.an('object');",
+                  "            const hasId = entry.hasOwnProperty('id');",
+                  "            const hasTimestamp = entry.hasOwnProperty('created_at');",
+                  "            const hasAmount = entry.hasOwnProperty('delta') && entry.hasOwnProperty('currency');",
+                  "            pm.expect(hasId && hasTimestamp && hasAmount).to.be.true;",
+                  "        });",
+                  "    }",
+                  "});",
+                  "",
+                  "pm.test('History entries are in chronological order (if multiple)', function () {",
+                  "    const history = pm.response.json().data;",
+                  "    ",
+                  "    if (history.length > 1) {",
+                  "        const timestamps = history.map(entry => {",
+                  "            return new Date(entry.created_at).getTime();",
+                  "        }).filter(t => !isNaN(t));",
+                  "        ",
+                  "        if (timestamps.length > 1) {",
+                  "            const isAscending = timestamps.every((t, i) => i === 0 || t >= timestamps[i-1]);",
+                  "            const isDescending = timestamps.every((t, i) => i === 0 || t <= timestamps[i-1]);",
+                  "            pm.expect(isAscending || isDescending).to.be.true;",
+                  "        }",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "c337a5b2-68d7-4187-afcb-1e364a84f4ad",
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "id": "217031b5-ccc2-468a-a3be-d582911d5812",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/history",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "history"
+              ]
+            },
+            "description": "Retrieve ledger entries (transaction history) for the authenticated user. Requires authentication."
+          },
+          "response": []
+        }
+      ],
+      "id": "bfcd84b7-191f-49db-b6fd-f93b447428f8"
+    },
+    {
+      "name": "Dev",
+      "item": [
+        {
+          "name": "Add Money (Dev)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "a2941c99-db19-4be9-b57e-009839b6296b",
+                "exec": [
+                  "// Add Money (Dev) Tests",
+                  "pm.test('Status code is 200 or 201', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test('Response is valid JSON', function () {",
+                  "    pm.response.to.be.json;",
+                  "});",
+                  "",
+                  "",
+                  "pm.test('Success indicator is positive', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.success !== undefined) {",
+                  "        pm.expect(jsonData.success).to.be.true;",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "0b2f1c23-e23f-4699-8c8a-f59c9124aebe",
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "id": "0c3d23d2-8cf6-405c-a102-56edaf0fce41",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currency\": \"USD\",\n  \"amount\": 1000,\n  \"reciverEmail\": \"admin@admin.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/dev/addMoney",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "dev",
+                "addMoney"
+              ]
+            },
+            "description": "Development endpoint to credit money to a user's account. Requires authentication. Currency must be a 3-character code (e.g., USD, EUR, BTC)."
+          },
+          "response": []
+        }
+      ],
+      "id": "56a7149e-63f0-49d1-813d-b89e02835953"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "id": "3568ffa5-cf15-4596-ae14-2626dc4285bf",
+        "type": "text/javascript",
+        "requests": {},
+        "exec": [
+          "pm.collectionVariables.set('timestamp', Date.now().toString());",
+          "",
+          "if (pm.request.method === 'POST') {",
+          "    pm.collectionVariables.set('idempotencyKey', pm.variables.replaceIn('{{$guid}}'));",
+          "}",
+          "",
+          "const publicEndpoints = ['/health', '/auth/signup', '/auth/login'];",
+          "const requestUrl = pm.request.url.toString();",
+          "const isPublicEndpoint = publicEndpoints.some(endpoint => requestUrl.includes(endpoint));",
+          "",
+          "if (!isPublicEndpoint) {",
+          "    const token = pm.environment.get('token');",
+          "    if (!token || token === '') {",
+          "        console.warn('Warning: Token is not set. Authenticated endpoints may fail.');",
+          "    }",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "id": "024e6223-4fa4-4891-b5e6-e77c9b871b47",
+        "type": "text/javascript",
+        "requests": {},
+        "exec": [
+          "// Collection-level test script",
+          "// Common response time check for all requests",
+          "pm.test('Response time is acceptable (< 5000ms)', function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(5000);",
+          "});"
+        ]
+      }
+    }
+  ]
+}

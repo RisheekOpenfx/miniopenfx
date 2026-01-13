@@ -3,7 +3,7 @@
 MiniOpenFX is a backend-first foreign exchange (FX) trading platform built with modern serverless and TypeScript technologies.  
 It focuses on clean architecture, strong type safety, and production-ready patterns.
 
-> ⚡ Built for learning, experimentation, and real-world backend engineering practices.
+> Built for learning, experimentation, and real-world backend engineering practices.
 
 ---
 
