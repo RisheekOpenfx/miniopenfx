@@ -1080,7 +1080,7 @@
     {
       "listen": "prerequest",
       "script": {
-        "id": "3568ffa5-cf15-4596-ae14-2626dc4285bf",
+        "id": "1f8def20-7127-4615-afa9-9d0a5bb3af2d",
         "type": "text/javascript",
         "requests": {},
         "exec": [
@@ -1106,12 +1106,10 @@
     {
       "listen": "test",
       "script": {
-        "id": "024e6223-4fa4-4891-b5e6-e77c9b871b47",
+        "id": "58958913-2169-4875-b168-5e43288c18b0",
         "type": "text/javascript",
         "requests": {},
         "exec": [
-          "// Collection-level test script",
-          "// Common response time check for all requests",
           "pm.test('Response time is acceptable (< 5000ms)', function () {",
           "    pm.expect(pm.response.responseTime).to.be.below(5000);",
           "});"

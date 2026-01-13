@@ -11,7 +11,7 @@ export async function devAddMoneyService(
   currency: string,
   amount: number,
   userId: string,
-  log: Logger
+  log: Logger,
 ): Promise<string> {
   let user: userType | null;
   try {
@@ -27,18 +27,17 @@ export async function devAddMoneyService(
   //   throw new Error(ErrorCode.NO_PERMISSION);
   // }
   const reason: string = "Credit";
-  let reciver: userType| null;
-  try{
+  let reciver: userType | null;
+  try {
     reciver = await getUserByEmail(db, reciverEmail);
-    if(reciver === null){
+    if (reciver === null) {
       throw new Error(ErrorCode.USER_DOESNT_EXIST);
     }
-  }
-  catch(e){
+  } catch (e) {
     log.info(e);
     throw new Error(ErrorCode.DB_ERROR);
   }
-  const reciverId = reciver.id
+  const reciverId = reciver.id;
   try {
     await createLedgerEntry(db, {
       userId: userId,

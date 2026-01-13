@@ -8,5 +8,5 @@ export enum HttpStatus {
   DB_ERROR = 502,
   DUMB_USER = 406,
   NOT_FOUND = 404,
-  NO_PERMISSION = 403
+  NO_PERMISSION = 403,
 }

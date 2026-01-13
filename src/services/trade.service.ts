@@ -21,7 +21,7 @@ export async function trade(
   idempotencyKey: string | undefined,
   quoteId: string,
   amount: number,
-  log:Logger
+  log: Logger,
 ): Promise<string> {
   let dup: tradeType | null;
   try {
@@ -58,7 +58,7 @@ export async function trade(
     res = await getUserBalances(db, senderId).then((balances) => {
       return balances.filter((b) => b.currency === base);
     });
-    console.log(res)
+    console.log(res);
   } catch (e) {
     console.log(e, "DB Error while getUserBalances");
     throw new Error(ErrorCode.DB_ERROR);
@@ -70,7 +70,7 @@ export async function trade(
   if (res[0].amount < amount) {
     throw new Error(ErrorCode.INSUFFICIENT_BALANCE);
   }
-  console.log(amount)
+  console.log(amount);
   try {
     await createLedgerEntry(db, {
       userId: senderId,

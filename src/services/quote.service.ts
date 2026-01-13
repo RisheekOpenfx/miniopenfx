@@ -15,10 +15,10 @@ export async function createQuoteService(
   side: "BUY" | "SELL",
   amount: number,
   priceCache: KVNamespace,
-  stub:any,
-  log: Logger
+  stub: DurableObjectStub,
+  log: Logger,
 ): Promise<quoteType> {
-  if (!await isFresh(pair, priceCache, log)) {
+  if (!(await isFresh(pair, priceCache, log))) {
     await refreshPrice(pair, priceCache, stub, log);
   }
   const price: PriceEntry | null = await getPrice(pair, priceCache);
@@ -30,7 +30,13 @@ export async function createQuoteService(
     side === "BUY" ? market * (1 + BUY_SPREAD) : market * (1 - SELL_SPREAD);
   let quote;
   try {
-    quote = await createQuote(db, { userId, pair, side, rate,quote: amount*rate });
+    quote = await createQuote(db, {
+      userId,
+      pair,
+      side,
+      rate,
+      quote: amount * rate,
+    });
   } catch (e) {
     log.info(e, "DB Error while CreateQuote");
     throw new Error(ErrorCode.DB_ERROR);

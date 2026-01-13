@@ -12,7 +12,7 @@ export async function signupUserService(
   db: DbLike,
   email: string,
   password: string,
-  log: Logger
+  log: Logger,
 ): Promise<userdata> {
   let existingUser: userType | null;
   try {
@@ -40,7 +40,7 @@ export async function loginService(
   db: DbLike,
   email: string,
   password: string,
-  log: Logger
+  log: Logger,
 ): Promise<string> {
   const user: userType | null = await getUserByEmail(db, email);
   if (!user) {

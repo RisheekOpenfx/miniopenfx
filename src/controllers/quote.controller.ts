@@ -10,17 +10,30 @@ import { Logger } from "pino";
 
 export async function quoteController(c: Context) {
   const id = c.env.FX_DO.idFromName("binance-fx");
-  const stub = c.env.FX_DO.get(id);
-  const input = c.get("userId");
+  const stub: DurableObjectStub = c.env.FX_DO.get(id);
+  const input: string = c.get("userId");
   const log: Logger = c.get("logger");
-  const safeinput = zuuid.safeParse(input);
-  if(safeinput instanceof z.ZodError || safeinput.data === undefined){
+  const safeinput: z.ZodSafeParseResult<string> = zuuid.safeParse(input);
+  if (safeinput instanceof z.ZodError || safeinput.data === undefined) {
     throw new Error(ErrorCode.ASSERTION_ERROR);
   }
-  const userId = safeinput.data;
-  const { pair, side, amount } = await c.req.json();
+  const userId: string = safeinput.data;
+  const { pair, side, amount } = (await c.req.json()) as {
+    pair: string;
+    side: "BUY" | "SELL";
+    amount: number;
+  };
 
   const db: DbLike = createDb(c.env.DATABASE_URL);
-  const quote:quoteType = await createQuoteService(db, userId, pair, side, amount, c.env.pricecache, stub, log);
+  const quote: quoteType = await createQuoteService(
+    db,
+    userId,
+    pair,
+    side,
+    amount,
+    c.env.pricecache,
+    stub,
+    log,
+  );
   return success(c, quote, 201);
 }

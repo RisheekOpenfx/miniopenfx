@@ -1,11 +1,12 @@
 import { NeonHttpDatabase } from "drizzle-orm/neon-http";
+import { Logger } from "pino";
 
-export type DbLike = NeonHttpDatabase<any>;
+export type DbLike = NeonHttpDatabase<Record<string, never>>;
 
 export type Variables = {
   userId: string;
   userRole: string;
-  logger: any,
+  logger: Logger;
 };
 
 export type PriceEntry = {

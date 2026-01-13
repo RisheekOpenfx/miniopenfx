@@ -1,5 +1,5 @@
 import { pgTable, numeric, text, uuid, primaryKey } from "drizzle-orm/pg-core";
-import { eq, sql, sum } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import type { DbLike } from "../types/types.js";
 import type { userBalanceType } from "../types/types.js";
 
@@ -8,7 +8,11 @@ export const balances = pgTable(
   {
     user_id: uuid("user_id").notNull(),
     currency: text("currency").notNull(),
-    amount: numeric("amount", { precision: 18, scale: 8, mode: "number" }).notNull(),
+    amount: numeric("amount", {
+      precision: 18,
+      scale: 8,
+      mode: "number",
+    }).notNull(),
   },
   (t) => ({
     pk: primaryKey({ columns: [t.user_id, t.currency] }),

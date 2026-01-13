@@ -1,5 +1,3 @@
-import { AssertionError } from "assert";
-
 export const ErrorCode = {
   NO_PERMISSION: "NO_PERMISSION",
   NOT_FOUND: "NOT_FOUND",

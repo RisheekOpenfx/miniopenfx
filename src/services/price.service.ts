@@ -3,18 +3,21 @@ import type { PriceEntry } from "../types/types.js";
 
 const CACHE_TTL_MS: number = 60000;
 
-const priceCache: Record<string, PriceEntry> = {};
-
-export async function refreshPrice(pair: string, pricecache:KVNamespace, stub: any, log: Logger): Promise<number> {
+export async function refreshPrice(
+  pair: string,
+  pricecache: KVNamespace,
+  stub: DurableObjectStub,
+  log: Logger,
+): Promise<number> {
   const { base, quote } = parsePair(pair);
-  var coinGeko:boolean = true;
-  var binancebool: boolean = true;
+  let coinGeko: boolean = true;
+  let binancebool: boolean = true;
   const res: Response = await fetch(
     `https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=${base},${quote}`,
   );
   const data: any = await res.json();
   if (!res.ok) {
-    coinGeko = false
+    coinGeko = false;
     // throw new Error(`CoinGecko API error: ${data?.error || res.statusText}`);
     log.info(`CoinGecko API error: ${data?.error || res.statusText}`);
   }
@@ -30,76 +33,86 @@ export async function refreshPrice(pair: string, pricecache:KVNamespace, stub: a
     log.info("Invalid CoinGecko response");
   }
   let binanceBase: number;
-  if(basecur.toUpperCase() === "USD"){
-    binanceBase=1;
-  }
-  else{
-    const {binance} = ((await getPriceMultiple(basecur.toUpperCase()+"USDT", stub, log)));
-    const cur = basecur.toUpperCase()+ "USDT";
-    if(binance[cur] === null ||binance[cur] === undefined){
+  if (basecur.toUpperCase() === "USD") {
+    binanceBase = 1;
+  } else {
+    const { binance } = await getPriceMultiple(
+      basecur.toUpperCase() + "USDT",
+      stub,
+      log,
+    );
+    const cur = basecur.toUpperCase() + "USDT";
+    if (binance[cur] === null || binance[cur] === undefined) {
       binancebool = false;
       log.info("Issue with binance");
-    }
-    else{
+    } else {
       binanceBase = 1 / Number(binance[cur].mid);
     }
   }
 
   let binanceQuote;
 
-  if(quotecur.toUpperCase() === "USD"){
+  if (quotecur.toUpperCase() === "USD") {
     binanceQuote = 1;
-  }
-  else{
-    const {binance} = ((await getPriceMultiple(quotecur.toUpperCase()+"USDT", stub, log)));
+  } else {
+    const { binance } = await getPriceMultiple(
+      quotecur.toUpperCase() + "USDT",
+      stub,
+      log,
+    );
     const cur = quotecur.toUpperCase() + "USDT";
-    if(binance[cur] === null ||binance[cur] === undefined){
+    if (binance[cur] === null || binance[cur] === undefined) {
       binancebool = false;
       log.info("Issue with binance");
-    }
-    else{
+    } else {
       binanceQuote = Number(binance[cur].mid);
     }
   }
   let rate;
-  if(binancebool && coinGeko){
-    const binancerate = binanceBase!/binanceQuote!;
-    const coingekkorate: number = data["tether"][quotecur] / data["tether"][basecur];
-    rate = binancerate>coingekkorate ? binancerate : coingekkorate;
-  }
-  else if(binancebool){
-    rate = binanceBase!/binanceQuote!;
-  }
-  else if(coinGeko){
+  if (binancebool && coinGeko) {
+    const binancerate = binanceBase! / binanceQuote!;
+    const coingekkorate: number =
+      data["tether"][quotecur] / data["tether"][basecur];
+    rate = binancerate > coingekkorate ? binancerate : coingekkorate;
+  } else if (binancebool) {
+    rate = binanceBase! / binanceQuote!;
+  } else if (coinGeko) {
     rate = data["tether"][quotecur] / data["tether"][basecur];
-  }
-  else{
+  } else {
     throw new Error();
   }
 
   await setPrice(pair, rate, pricecache);
-  log.info(rate)
+  log.info(rate);
   return rate;
 }
 
-export async function isFresh(pair: string, pricecache:KVNamespace, log:Logger): Promise<boolean> {
-  log.info("isfresh" +  pair)
-  const entry: PriceEntry|null = await getPrice(pair, pricecache);
+export async function isFresh(
+  pair: string,
+  pricecache: KVNamespace,
+  log: Logger,
+): Promise<boolean> {
+  log.info("isfresh" + pair);
+  const entry: PriceEntry | null = await getPrice(pair, pricecache);
   if (!entry) return false;
   log.info(false);
   return Date.now() - entry.ts < CACHE_TTL_MS;
 }
 
-export async function getPrice(pair: string, pricecache: KVNamespace): Promise<PriceEntry | null> {
+export async function getPrice(
+  pair: string,
+  pricecache: KVNamespace,
+): Promise<PriceEntry | null> {
   const raw = await pricecache.get(pair);
   if (!raw) return null;
 
   const parsed = JSON.parse(raw) as unknown;
 
   if (
-    typeof parsed !== "object" || parsed === null ||
-    typeof (parsed as any).rate !== "number" ||
-    typeof (parsed as any).ts !== "number"
+    typeof parsed !== "object" ||
+    parsed === null ||
+    typeof (parsed as PriceEntry).rate !== "number" ||
+    typeof (parsed as PriceEntry).ts !== "number"
   ) {
     return null; // corrupted cache
   }
@@ -107,14 +120,17 @@ export async function getPrice(pair: string, pricecache: KVNamespace): Promise<P
   return parsed as PriceEntry;
 }
 
-export async function setPrice(pair: string, rate: number, pricecache: KVNamespace): Promise<void> {
+export async function setPrice(
+  pair: string,
+  rate: number,
+  pricecache: KVNamespace,
+): Promise<void> {
   const payload: PriceEntry = { rate, ts: Date.now() };
 
   await pricecache.put(pair, JSON.stringify(payload), {
     expirationTtl: Math.ceil(CACHE_TTL_MS / 1000),
   });
 }
-
 
 export function parsePair(pair: string): { base: string; quote: string } {
   const symbol: string = pair.replace("/", "");
@@ -129,8 +145,8 @@ export function parsePair(pair: string): { base: string; quote: string } {
 
 export async function getPriceMultiple(
   bookTicker: string | undefined,
-  stub: any,
-  log: Logger
+  stub: DurableObjectStub,
+  log: Logger,
 ) {
   let symbols = bookTicker;
   type BinanceQuote = { bid: string; ask: string; mid: string; ts: number };
@@ -140,8 +156,7 @@ export async function getPriceMultiple(
 
     const binanceRes = await stub.fetch(`https://do.local/?symbols=${symbols}`);
     binance = await binanceRes.json();
-  }
-  else{
+  } else {
     log.info("Unrecognized symbol");
     throw new Error();
   }
