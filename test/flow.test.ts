@@ -34,7 +34,7 @@ describe("MiniOpenFX API", () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        pair: "USDEUR",
+        pair: "EURUSD",
         side: "BUY",
         amount: 1,
       }),
@@ -50,11 +50,33 @@ describe("MiniOpenFX API", () => {
       headers:{
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
+        "Idempotency-Key": quoteId
       },
         body: JSON.stringify({
           quoteId: quoteId,
         }),
     })
     expect(res.status).toBe(201);
-  })
+  });
+
+  it("Get Balance", async() => {
+    const res = await fetch(`${BASE_URL}/balances`,{
+      method: "GET",
+      headers:{
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    expect(res.status).toBe(200);
+    console.log((await res.json()).data)
+  });
+  it("Get Balance", async() => {
+    const res = await fetch(`${BASE_URL}/history`,{
+      method: "GET",
+      headers:{
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    expect(res.status).toBe(200);
+    console.log((await res.json()).data)
+  });
 });

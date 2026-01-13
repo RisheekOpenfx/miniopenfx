@@ -13,12 +13,13 @@ handle null returns from the database model
 create a good idempotency key
 detect all the possible breaks
 add readme
-add type locks for zod variables;
+
 
 
 
 Done:
 
+add type locks for zod variables
 Make it type lock
 Biome linter
 prettier
